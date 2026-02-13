@@ -2,17 +2,24 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-app.use(cors()); // CRITICAL: Allow Bmail to connect
-app.use(express.json()); // CRITICAL: Parse email data
+// 1. Enable CORS for all origins and methods
+app.use(cors()); 
+
+// 2. EXPLICITLY handle "Preflight" requests (the OPTIONS method)
+app.options('*', cors()); 
+
+app.use(express.json()); 
 
 app.get('/emails', (req, res) => {
-  res.json([]); // Return your emails array
+  console.log("Emails requested");
+  res.json([]); 
 });
 
 app.post('/emails/send', (req, res) => {
-  const { to, subject, body } = req.body;
-  // Handle sending...
-  res.json({ id: Date.now().toString(), to, subject, body, timestamp: Date.now() });
+  console.log("Sending email:", req.body);
+  res.json({ ...req.body, id: Date.now().toString(), timestamp: Date.now() });
 });
 
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000, () => {
+  console.log("Bmail Backend is running!");
+});
